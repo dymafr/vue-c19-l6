@@ -24,9 +24,9 @@ if (route.params.productId) {
 const initialValues = {
   title: product.value ? product.value.title : '',
   image: product.value ? product.value.image : '',
-  price: product.value ? product.value.price : 0,
+  price: product.value ? product.value.price : '',
   description: product.value ? product.value.description : '',
-  category: product.value ? product.value.category : 'desktop',
+  category: product.value ? product.value.category : '',
 };
 
 onMounted(() => {
@@ -54,6 +54,7 @@ const validationSchema = toFormValidator(
 
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema,
+  initialValues,
 });
 
 const title = useField('title');
@@ -64,9 +65,12 @@ const category = useField('category');
 
 const trySubmit = handleSubmit(async (formValues, { resetForm }) => {
   try {
-    addProduct();
-    resetForm();
-    firstInput.value?.focus();
+    if (!product.value) {
+      await addProduct(formValues);
+    } else {
+      await editProduct(product.value._id, formValues);
+    }
+    router.push('/admin/productlist');
   } catch (e) {
     console.log(e);
   }
@@ -75,7 +79,9 @@ const trySubmit = handleSubmit(async (formValues, { resetForm }) => {
 
 <template>
   <div class="card">
-    <h3 class="mb-10">Ajouter un article</h3>
+    <h3 class="mb-10">
+      {{ product ? 'Editer un produit' : 'Créer un produit' }}
+    </h3>
     <form @submit="trySubmit">
       <div class="d-flex flex-column mb-20">
         <label class="mb-5">*Titre</label>
