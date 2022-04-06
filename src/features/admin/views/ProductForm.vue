@@ -3,8 +3,32 @@ import { useForm, useField } from 'vee-validate';
 import { z } from 'zod';
 import { toFormValidator } from '@vee-validate/zod';
 import { onMounted, ref } from 'vue';
+import {
+  addProduct,
+  editProduct,
+  getProduct,
+} from '../../../shared/services/product.service';
+import type { ProductInterface } from '../../../interfaces/Product.interface';
+import { useRoute, useRouter } from 'vue-router';
 
 const firstInput = ref<HTMLInputElement | null>(null);
+const product = ref<ProductInterface | null>(null);
+
+const route = useRoute();
+const router = useRouter();
+
+if (route.params.productId) {
+  product.value = await getProduct(route.params.productId as string);
+}
+
+const initialValues = {
+  title: product.value ? product.value.title : '',
+  image: product.value ? product.value.image : '',
+  price: product.value ? product.value.price : 0,
+  description: product.value ? product.value.description : '',
+  category: product.value ? product.value.category : 'desktop',
+};
+
 onMounted(() => {
   firstInput.value?.focus();
 });
@@ -40,13 +64,7 @@ const category = useField('category');
 
 const trySubmit = handleSubmit(async (formValues, { resetForm }) => {
   try {
-    await fetch('https://restapi.fr/api/projetproducts', {
-      method: 'POST',
-      body: JSON.stringify(formValues),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    addProduct();
     resetForm();
     firstInput.value?.focus();
   } catch (e) {

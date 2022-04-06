@@ -1,4 +1,8 @@
-import type { FiltersInterface, ProductInterface } from '../../interfaces';
+import type {
+  FiltersInterface,
+  ProductInterface,
+  ProductFormInterface,
+} from '../../interfaces';
 import { ref, Ref } from 'vue';
 
 const BASE_URL = 'https://restapi.fr/api/vueprojectproducts';
@@ -52,4 +56,40 @@ export async function deleteProduct(productId: string): Promise<string> {
     method: 'DELETE',
   });
   return productId;
+}
+
+export async function addProduct(
+  product: ProductFormInterface
+): Promise<ProductInterface> {
+  const newProduct = await (
+    await fetch('https://restapi.fr/api/projetproducts', {
+      method: 'POST',
+      body: JSON.stringify(product),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  ).json();
+  return newProduct;
+}
+
+export async function getProduct(productId: string): Promise<ProductInterface> {
+  const product = await (await fetch(`${BASE_URL}/${productId}`)).json();
+  return product;
+}
+
+export async function editProduct(
+  productId: string,
+  product: ProductFormInterface
+): Promise<ProductInterface> {
+  const updatedProduct = await (
+    await fetch(`${BASE_URL}/${productId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(product),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  ).json();
+  return updatedProduct;
 }

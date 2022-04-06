@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   useFetchProducts,
-  tryDeleteProduct,
+  deleteProduct,
 } from '../../../shared/services/product.service';
 
 const { products, loading, error } = useFetchProducts();
@@ -24,7 +24,9 @@ async function tryDeleteProduct(productId: string) {
         :key="product._id"
       >
         <span class="flex-fill">{{ product.title }}</span>
-        <button class="btn btn-primary mr-20">Modifier</button>
+        <router-link :to="{ name: 'edit', params: { productId: product._id } }">
+          <button class="btn btn-primary mr-20">Modifier</button>
+        </router-link>
         <button @click="tryDeleteProduct(product._id)" class="btn btn-danger">
           Supprimer
         </button>
