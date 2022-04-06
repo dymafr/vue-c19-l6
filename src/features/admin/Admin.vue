@@ -15,7 +15,9 @@ import AdminNav from './components/AdminNav.vue';
         align-items-center
       "
     >
-      <router-view> </router-view>
+      <router-view v-slot="{ Component, route }">
+        <Component :is="Component" :key="route.fullPath" />
+      </router-view>
     </div>
   </div>
 </template>
